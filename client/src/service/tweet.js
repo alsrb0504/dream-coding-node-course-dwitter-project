@@ -2,11 +2,11 @@ export default class TweetService {
   tweets = [
     {
       id: 1,
-      text: '드림코딩에서 강의 들으면 너무 좋으다',
-      createdAt: '2021-05-09T04:20:57.000Z',
-      name: 'Bob',
-      username: 'bob',
-      url: 'https://widgetwhats.com/app/uploads/2019/11/free-profile-photo-whatsapp-1.png',
+      text: "드림코딩에서 강의 들으면 너무 좋으다",
+      createdAt: "2021-05-09T04:20:57.000Z",
+      name: "Bob",
+      username: "bob",
+      url: "https://cdn.pixabay.com/photo/2020/01/16/17/32/pokemon-4771238_960_720.jpg",
     },
   ];
 
@@ -20,8 +20,8 @@ export default class TweetService {
     const tweet = {
       id: Date.now(),
       createdAt: new Date(),
-      name: 'Ellie',
-      username: 'ellie',
+      name: "Ellie",
+      username: "ellie",
       text,
     };
     this.tweets.push(tweet);
@@ -35,7 +35,7 @@ export default class TweetService {
   async updateTweet(tweetId, text) {
     const tweet = this.tweets.find((tweet) => tweet.id === tweetId);
     if (!tweet) {
-      throw new Error('tweet not found!');
+      throw new Error("tweet not found!");
     }
     tweet.text = text;
     return tweet;
