@@ -1,10 +1,11 @@
 import express from "express";
+import "express-async-errors";
 
 const router = express.Router();
 
-const tweets = [
+let tweets = [
   {
-    id: 1,
+    id: "1",
     text: "드림코딩에서 강의 들으면 너무 좋으다",
     createdAt: "2021-05-09T04:20:57.000Z",
     name: "Bob",
@@ -12,7 +13,7 @@ const tweets = [
     url: "https://cdn.pixabay.com/photo/2020/01/16/17/32/pokemon-4771238_960_720.jpg",
   },
   {
-    id: 2,
+    id: "2",
     text: "테스트 트윗 2",
     createdAt: "2021-05-09T04:20:57.000Z",
     name: "alice",
@@ -20,7 +21,7 @@ const tweets = [
     url: "https://cdn.pixabay.com/photo/2020/01/16/17/32/pokemon-4771238_960_720.jpg",
   },
   {
-    id: 3,
+    id: "3",
     text: "테스트 트윗 3",
     createdAt: "2021-05-09T04:20:57.000Z",
     name: "Bob",
@@ -30,69 +31,58 @@ const tweets = [
 ];
 
 router.get("/", (req, res, next) => {
-  const query = req.query;
+  const username = req.query.username;
+  const data = username
+    ? tweets.filter((t) => t.username === username)
+    : tweets;
 
-  if (query.username) {
-    const filtered = tweets.filter(
-      (tweet) => tweet.username === query.username
-    );
-    res.status(200).send(filtered);
-  } else {
-    res.status(200).send(tweets);
-  }
-
-  // next();
+  res.status(200).json(data);
 });
 
 router.get("/:id", (req, res, next) => {
-  const param = req.params;
-  const id = Number(param["id"]);
+  const id = req.params.id;
 
-  const filtered = tweets.filter((tweet) => tweet.id === id);
-  res.status(200).send(filtered);
-
-  // next();
+  const tweet = tweets.find((t) => t.id === id);
+  if (tweet) {
+    res.status(200).json(tweet);
+  } else {
+    res.status(404).json({ message: `Tweet id(${id}) not found!` });
+  }
 });
 
 router.post("/", (req, res, next) => {
-  const body = req.body;
-  const { text, username, name } = body;
+  const { text, username, name } = req.body;
 
-  const newTweet = {
-    id: tweets.length + 1,
+  const tweet = {
+    id: Date.now().toString(),
     text,
     createdAt: new Date(),
     name,
     username,
     url: "",
   };
-
-  tweets.push(newTweet);
-  res.status(201).send(tweets);
+  tweets = [tweet, ...tweets];
+  res.status(201).json(tweet);
 });
 
 router.put("/:id", (req, res, next) => {
-  const body = req.body;
-  const { text } = body;
+  const id = req.params.id;
+  const text = req.body.text;
+  const tweet = tweets.find((t) => t.id === id);
 
-  const param = req.params;
-  const id = Number(param["id"]);
-
-  const idx = tweets.findIndex((tweet) => tweet.id === id);
-
-  tweets[idx].text = text;
-  res.status(202).send(tweets[idx]);
+  if (tweet) {
+    tweet.text = text;
+    res.status(200).json(tweet);
+  } else {
+    res.status(404).json({ message: `Tweet id(${id}) not found!` });
+  }
 });
 
 router.delete("/:id", (req, res, next) => {
-  const param = req.params;
-  const id = Number(param["id"]);
+  const id = req.params.id;
+  tweets = tweets.filter((t) => t.id !== id);
 
-  const idx = tweets.findIndex((tweet) => tweet.id === id);
-
-  tweets.splice(idx, 1);
-
-  res.status(200).send(tweets);
+  res.sendStatus(204);
 });
 
 export default router;
