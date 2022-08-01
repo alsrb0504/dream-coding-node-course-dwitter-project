@@ -3,32 +3,34 @@ import "express-async-errors";
 
 const router = express.Router();
 
-let tweets = [
-  {
-    id: "1",
-    text: "드림코딩에서 강의 들으면 너무 좋으다",
-    createdAt: "2021-05-09T04:20:57.000Z",
-    name: "Bob",
-    username: "bob",
-    url: "https://cdn.pixabay.com/photo/2020/01/16/17/32/pokemon-4771238_960_720.jpg",
-  },
-  {
-    id: "2",
-    text: "테스트 트윗 2",
-    createdAt: "2021-05-09T04:20:57.000Z",
-    name: "alice",
-    username: "alice",
-    url: "https://cdn.pixabay.com/photo/2020/01/16/17/32/pokemon-4771238_960_720.jpg",
-  },
-  {
-    id: "3",
-    text: "테스트 트윗 3",
-    createdAt: "2021-05-09T04:20:57.000Z",
-    name: "Bob",
-    username: "bob",
-    url: "https://cdn.pixabay.com/photo/2020/01/16/17/32/pokemon-4771238_960_720.jpg",
-  },
-];
+import tweets from "../data/tweets.js";
+
+// let tweets = [
+//   {
+//     id: "1",
+//     text: "드림코딩에서 강의 들으면 너무 좋으다",
+//     createdAt: "2021-05-09T04:20:57.000Z",
+//     name: "Bob",
+//     username: "bob",
+//     url: "https://cdn.pixabay.com/photo/2020/01/16/17/32/pokemon-4771238_960_720.jpg",
+//   },
+//   {
+//     id: "2",
+//     text: "테스트 트윗 2",
+//     createdAt: "2021-05-09T04:20:57.000Z",
+//     name: "alice",
+//     username: "alice",
+//     url: "https://cdn.pixabay.com/photo/2020/01/16/17/32/pokemon-4771238_960_720.jpg",
+//   },
+//   {
+//     id: "3",
+//     text: "테스트 트윗 3",
+//     createdAt: "2021-05-09T04:20:57.000Z",
+//     name: "Bob",
+//     username: "bob",
+//     url: "https://cdn.pixabay.com/photo/2020/01/16/17/32/pokemon-4771238_960_720.jpg",
+//   },
+// ];
 
 router.get("/", (req, res, next) => {
   const username = req.query.username;
@@ -61,7 +63,10 @@ router.post("/", (req, res, next) => {
     username,
     url: "",
   };
-  tweets = [tweet, ...tweets];
+  // tweets = [tweet, ...tweets];
+
+  tweets.unshift(tweet);
+
   res.status(201).json(tweet);
 });
 
@@ -80,7 +85,10 @@ router.put("/:id", (req, res, next) => {
 
 router.delete("/:id", (req, res, next) => {
   const id = req.params.id;
-  tweets = tweets.filter((t) => t.id !== id);
+
+  const deleteIdx = tweets.find((t) => t.id !== id);
+
+  tweets.splice(deleteIdx, 1);
 
   res.sendStatus(204);
 });
