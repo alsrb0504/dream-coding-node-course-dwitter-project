@@ -1,50 +1,45 @@
-import tweets from "../data/tweets.js";
+import * as tweetRepository from "../data/tweets.js";
 
-export const getTweetsAll = () => {
-  return tweets;
+export const getTweets = async (req, res, next) => {
+  const username = req.query.username;
+  const data = await (username
+    ? tweetRepository.getByUsername(username)
+    : tweetRepository.getAll());
+
+  res.status(200).json(data);
 };
 
-export const getTweetsUsername = (username) => {
-  const data = tweets.filter((t) => t.username === username);
-  return data;
-};
-
-export const getTweetsId = (id) => {
-  const tweet = tweets.find((t) => t.id === id);
-
-  return tweet;
-};
-
-export const createTweet = (text, username, name) => {
-  const tweet = {
-    id: Date.now().toString(),
-    text,
-    createdAt: new Date(),
-    name,
-    username,
-    url: "",
-  };
-
-  return tweet;
-};
-
-export const editTweet = (id, text) => {
-  const tweet = tweets.find((t) => t.id === id);
+export const getTweet = async (req, res, next) => {
+  const id = req.params.id;
+  const tweet = await tweetRepository.getById(id);
 
   if (tweet) {
-    tweet.text = text;
+    res.status(200).json(tweet);
+  } else {
+    res.status(404).json({ message: `Tweet id(${id}) not found!` });
   }
-
-  return tweet;
 };
 
-export const deleteTweet = (id) => {
-  const deleteIdx = tweets.findIndex((t) => t.id === id);
+export const createTweet = async (req, res, next) => {
+  const { text, username, name } = req.body;
+  const tweet = await tweetRepository.create(text, username, name);
+  res.status(201).json(tweet);
+};
 
-  if (deleteIdx !== -1) {
-    tweets.splice(deleteIdx, 1);
-    return 204;
+export const updateTweet = async (req, res, next) => {
+  const id = req.params.id;
+  const text = req.body.text;
+  const tweet = await tweetRepository.update(id, text);
+
+  if (tweet) {
+    res.status(200).json(tweet);
   } else {
-    return 404;
+    res.status(404).json({ message: `Tweet id(${id}) not found!` });
   }
+};
+
+export const deleteTweet = async (req, res, next) => {
+  const id = req.params.id;
+  await tweetRepository.remove(id);
+  res.sendStatus(204);
 };
