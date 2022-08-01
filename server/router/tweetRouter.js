@@ -1,17 +1,17 @@
 import express from "express";
 import "express-async-errors";
-import {
-  createTweet,
-  deleteTweet,
-  editTweet,
-  getTweetsAll,
-  getTweetsId,
-  getTweetsUsername,
-} from "../controller/tweets.js";
+// import {
+//   createTweet,
+//   deleteTweet,
+//   editTweet,
+//   getTweetsAll,
+//   getTweetsId,
+//   getTweetsUsername,
+// } from "../controller/tweets.js";
 
 const router = express.Router();
 
-import tweets from "../data/tweets.js";
+import * as tweetRepository from "../data/tweets.js";
 
 // let tweets = [
 //   {
@@ -42,16 +42,16 @@ import tweets from "../data/tweets.js";
 
 router.get("/", (req, res, next) => {
   const username = req.query.username;
-  const data = username ? getTweetsUsername(username) : getTweetsAll();
+  const data = username
+    ? tweetRepository.getByUsername(username)
+    : tweetRepository.getAll();
 
   res.status(200).json(data);
 });
 
 router.get("/:id", (req, res, next) => {
   const id = req.params.id;
-
-  // const tweet = tweets.find((t) => t.id === id);
-  const tweet = getTweetsId(id);
+  const tweet = tweetRepository.getById(id);
 
   if (tweet) {
     res.status(200).json(tweet);
@@ -62,31 +62,16 @@ router.get("/:id", (req, res, next) => {
 
 router.post("/", (req, res, next) => {
   const { text, username, name } = req.body;
-
-  // const tweet = {
-  //   id: Date.now().toString(),
-  //   text,
-  //   createdAt: new Date(),
-  //   name,
-  //   username,
-  //   url: "",
-  // };
-  // tweets = [tweet, ...tweets];
-  const tweet = createTweet(text, username, name);
-
-  tweets.unshift(tweet);
-
+  const tweet = tweetRepository.create(text, username, name);
   res.status(201).json(tweet);
 });
 
 router.put("/:id", (req, res, next) => {
   const id = req.params.id;
   const text = req.body.text;
-  // const tweet = tweets.find((t) => t.id === id);
-  const tweet = editTweet(id, text);
+  const tweet = tweetRepository.update(id, text);
 
   if (tweet) {
-    // tweet.text = text;
     res.status(200).json(tweet);
   } else {
     res.status(404).json({ message: `Tweet id(${id}) not found!` });
@@ -95,13 +80,8 @@ router.put("/:id", (req, res, next) => {
 
 router.delete("/:id", (req, res, next) => {
   const id = req.params.id;
-  const status = deleteTweet(id);
-
-  // const deleteIdx = tweets.find((t) => t.id !== id);
-  // tweets.splice(deleteIdx, 1);
-
-  // res.sendStatus(204);
-  res.sendStatus(status);
+  tweetRepository.remove(id);
+  res.sendStatus(204);
 });
 
 export default router;
