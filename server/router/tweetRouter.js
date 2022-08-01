@@ -1,5 +1,13 @@
 import express from "express";
 import "express-async-errors";
+import {
+  createTweet,
+  deleteTweet,
+  editTweet,
+  getTweetsAll,
+  getTweetsId,
+  getTweetsUsername,
+} from "../controller/tweets.js";
 
 const router = express.Router();
 
@@ -34,9 +42,7 @@ import tweets from "../data/tweets.js";
 
 router.get("/", (req, res, next) => {
   const username = req.query.username;
-  const data = username
-    ? tweets.filter((t) => t.username === username)
-    : tweets;
+  const data = username ? getTweetsUsername(username) : getTweetsAll();
 
   res.status(200).json(data);
 });
@@ -44,7 +50,9 @@ router.get("/", (req, res, next) => {
 router.get("/:id", (req, res, next) => {
   const id = req.params.id;
 
-  const tweet = tweets.find((t) => t.id === id);
+  // const tweet = tweets.find((t) => t.id === id);
+  const tweet = getTweetsId(id);
+
   if (tweet) {
     res.status(200).json(tweet);
   } else {
@@ -55,15 +63,16 @@ router.get("/:id", (req, res, next) => {
 router.post("/", (req, res, next) => {
   const { text, username, name } = req.body;
 
-  const tweet = {
-    id: Date.now().toString(),
-    text,
-    createdAt: new Date(),
-    name,
-    username,
-    url: "",
-  };
+  // const tweet = {
+  //   id: Date.now().toString(),
+  //   text,
+  //   createdAt: new Date(),
+  //   name,
+  //   username,
+  //   url: "",
+  // };
   // tweets = [tweet, ...tweets];
+  const tweet = createTweet(text, username, name);
 
   tweets.unshift(tweet);
 
@@ -73,10 +82,11 @@ router.post("/", (req, res, next) => {
 router.put("/:id", (req, res, next) => {
   const id = req.params.id;
   const text = req.body.text;
-  const tweet = tweets.find((t) => t.id === id);
+  // const tweet = tweets.find((t) => t.id === id);
+  const tweet = editTweet(id, text);
 
   if (tweet) {
-    tweet.text = text;
+    // tweet.text = text;
     res.status(200).json(tweet);
   } else {
     res.status(404).json({ message: `Tweet id(${id}) not found!` });
@@ -85,12 +95,13 @@ router.put("/:id", (req, res, next) => {
 
 router.delete("/:id", (req, res, next) => {
   const id = req.params.id;
+  const status = deleteTweet(id);
 
-  const deleteIdx = tweets.find((t) => t.id !== id);
+  // const deleteIdx = tweets.find((t) => t.id !== id);
+  // tweets.splice(deleteIdx, 1);
 
-  tweets.splice(deleteIdx, 1);
-
-  res.sendStatus(204);
+  // res.sendStatus(204);
+  res.sendStatus(status);
 });
 
 export default router;
