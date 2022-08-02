@@ -5,6 +5,7 @@ import helmet from "helmet";
 import "express-async-errors";
 
 import tweetRoute from "./router/tweetRouter.js";
+import authRoute from "./router/authRouter.js";
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(cors());
 app.use(morgan("tiny"));
 
 app.use("/tweets", tweetRoute);
+app.use("/auth", authRoute);
 
 app.use((req, res, next) => {
   res.sendStatus(404);
