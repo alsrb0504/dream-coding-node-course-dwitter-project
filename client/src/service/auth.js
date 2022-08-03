@@ -1,10 +1,11 @@
 export default class AuthService {
-  constructor(http) {
+  constructor(http, tokenStorage) {
     this.http = http;
+    this.tokenStorage = tokenStorage;
   }
 
   async signup(username, password, name, email, url) {
-    const res = await this.http.fetch(`/auth/signup`, {
+    const data = await this.http.fetch(`/auth/signup`, {
       method: "POST",
       body: JSON.stringify({
         username,
@@ -14,45 +15,28 @@ export default class AuthService {
         url,
       }),
     });
-
-    localStorage.setItem("token", res.token);
-
-    return {
-      username: res.username,
-      token: "abc1234",
-    };
+    this.tokenStorage.saveToken(data.token);
+    return data;
   }
 
   async login(username, password) {
-    const res = await this.http.fetch(`/auth/login`, {
+    const data = await this.http.fetch(`/auth/login`, {
       method: "POST",
       body: JSON.stringify({ username, password }),
     });
-
-    // 헤더에 토큰 설정..
-    localStorage.setItem("token", res.token);
-
-    return {
-      username: res.username,
-      // token: res.token,
-    };
+    this.tokenStorage.saveToken(data.token);
+    return data;
   }
 
   async me() {
-    const res = await this.http.fetch(`/auth/me`, {
+    const token = this.tokenStorage.getToken();
+    return await this.http.fetch(`/auth/me`, {
       method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
     });
-
-    return {
-      username: res.username,
-      // token: "abc1234",
-    };
   }
 
   async logout() {
-    // localStorage.setItem("token", res.token);
-    localStorage.clear();
-
-    return;
+    this.tokenStorage.clearToken();
   }
 }

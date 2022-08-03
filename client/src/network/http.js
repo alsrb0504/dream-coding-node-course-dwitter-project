@@ -4,14 +4,11 @@ export default class HttpClient {
   }
 
   async fetch(url, options) {
-    const token = localStorage.getItem("token");
-
     const res = await fetch(`${this.baseURL}${url}`, {
       ...options,
       headers: {
         "Content-Type": "application/json",
-        authorization: `Bearer ${token}`,
-        ...options.header,
+        ...options.headers,
       },
     });
 
