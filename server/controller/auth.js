@@ -5,7 +5,8 @@ import * as userRepository from "../data/auth.js";
 
 // Todo : 나중에 옮길 것.
 const jwtSecretKey = "SERVER_SECRET";
-const jwtExpiresInDays = "2h";
+// const jwtExpiresInDays = "2h";
+const jwtExpiresInDays = "2s";
 const bcryptSaltRounds = 12;
 
 export const signup = async (req, res) => {
