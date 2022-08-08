@@ -5,8 +5,7 @@ import * as userRepository from "../data/auth.js";
 
 // Todo : 나중에 옮길 것.
 const jwtSecretKey = "SERVER_SECRET";
-// const jwtExpiresInDays = "2h";
-const jwtExpiresInDays = "2s";
+const jwtExpiresInDays = "2h";
 const bcryptSaltRounds = 12;
 
 export const signup = async (req, res) => {
@@ -53,8 +52,5 @@ export async function me(req, res, next) {
   if (!user) {
     return res.status(404).json({ message: "User not found!" });
   }
-
-  console.log(user);
-
   return res.status(200).json({ token: req.token, username: user.username });
 }
