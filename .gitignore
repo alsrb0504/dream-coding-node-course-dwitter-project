@@ -1,3 +1,4 @@
 # except
 .history
 node_modules/
+server/.env

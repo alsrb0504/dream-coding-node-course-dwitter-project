@@ -1,8 +1,6 @@
 import jwt from "jsonwebtoken";
+import { config } from "../config.js";
 import * as userRepository from "../data/auth.js";
-
-// 추후 지울 것
-const jwtSecretKey = "SERVER_SECRET";
 
 const AUTH_ERROR = { message: "Authentication Error" };
 
@@ -13,7 +11,7 @@ export const isAuth = async (req, res, next) => {
     return res.status(401).json(AUTH_ERROR);
   }
   const token = authHeader.split(" ")[1];
-  jwt.verify(token, jwtSecretKey, async (error, decoded) => {
+  jwt.verify(token, config.jwt.secretKey, async (error, decoded) => {
     if (error) {
       return res.status(401).json(AUTH_ERROR);
     }
