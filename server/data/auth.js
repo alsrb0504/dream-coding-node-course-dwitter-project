@@ -10,15 +10,15 @@ let users = [
   },
   {
     id: "2",
-    username: "testuser 2",
+    username: "testuser2",
     password: "$2b$12$1hqJuFtAMg5camAzued57O8tPWSCcq5Vm2XvhDkscTQ3PBej/prbO",
-    name: "testuse",
+    name: "testuser2",
     email: "testuser2@gmail.com",
     url: "https://cdn.pixabay.com/photo/2016/11/04/13/19/students-1797753_960_720.jpg",
   },
   {
     id: "3",
-    username: "testuser 3",
+    username: "testuser3",
     password: "$2b$12$1hqJuFtAMg5camAzued57O8tPWSCcq5Vm2XvhDkscTQ3PBej/prbO",
     name: "testuse3",
     email: "testuser3@gmail.com",
