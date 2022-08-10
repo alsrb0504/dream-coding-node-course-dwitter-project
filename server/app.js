@@ -30,19 +30,7 @@ app.use((error, req, res, next) => {
   res.sendStatus(500);
 });
 
-db.getConnection().then(console.log);
+db.getConnection().then();
 
 const server = app.listen(config.host.port);
 initSocket(server);
-
-// const socketIO = new Server(server, {
-//   cors: {
-//     origin: "*",
-//   },
-// });
-
-// socketIO.on("connection", (socket) => {
-//   console.log("client is here!");
-//   socketIO.emit("dwitter", "hello~");
-//   socketIO.emit("dwitter", "hello~");
-// });
