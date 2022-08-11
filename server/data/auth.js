@@ -1,11 +1,10 @@
 import SQ from "sequelize";
-import { db, sequelize } from "../db/database.js";
-
+import { sequelize } from "../db/database.js";
 const DataTypes = SQ.DataTypes;
 
 // 자동으로 테이블 이름에 s를 붙여줌.
 // user => users
-const User = sequelize.define(
+export const User = sequelize.define(
   "user",
   {
     id: {
