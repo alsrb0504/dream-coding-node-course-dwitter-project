@@ -3,7 +3,6 @@ import cors from "cors";
 import morgan from "morgan";
 import helmet from "helmet";
 import "express-async-errors";
-// import { Server } from "socket.io";
 
 import tweetRoute from "./router/tweetRouter.js";
 import authRoute from "./router/authRouter.js";
@@ -21,6 +20,8 @@ const corsOption = {
 app.use(express.json());
 app.use(helmet());
 app.use(cors(corsOption));
+// app.use(cors());
+
 app.use(morgan("tiny"));
 
 app.use("/tweets", tweetRoute);
