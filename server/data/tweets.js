@@ -1,71 +1,81 @@
-import * as userRepository from "../data/auth.js";
+import SQ, { Sequelize } from "sequelize";
+import { sequelize } from "../db/database.js";
+import { User } from "./auth.js";
+const DataTypes = SQ.DataTypes;
 
-let tweets = [
-  {
-    id: "1",
-    text: "드림코딩에서 강의 들으면 너무 좋으다",
-    createdAt: "2021-05-09T04:20:57.000Z",
-    userId: "1",
+const Tweet = sequelize.define("tweet", {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    allowNull: false,
+    primaryKey: true,
   },
-  {
-    id: "2",
-    text: "테스트 트윗 2",
-    createdAt: "2021-05-09T04:20:57.000Z",
-    userId: "2",
+  text: {
+    type: DataTypes.TEXT,
+    allowNull: false,
   },
-  {
-    id: "3",
-    text: "테스트 트윗 3",
-    createdAt: "2021-05-09T04:20:57.000Z",
-    userId: "1",
+});
+Tweet.belongsTo(User);
+
+const INCLUDE_USER = {
+  attributes: [
+    "id",
+    "text",
+    "createdAt",
+    "userId",
+    [Sequelize.col("user.name"), "name"],
+    [Sequelize.col("user.username"), "username"],
+    [Sequelize.col("user.url"), "url"],
+  ],
+  include: {
+    model: User,
+    attributes: [],
   },
-];
+};
+
+const ORDER_DESC = {
+  order: [["createdAt", "DESC"]],
+};
 
 export const getAll = async () => {
-  return Promise.all(
-    tweets.map(async (tweet) => {
-      const { username, name, url } = await userRepository.findById(
-        tweet.userId
-      );
-      return { ...tweet, username, name, url };
-    })
-  );
+  return Tweet.findAll({
+    ...INCLUDE_USER,
+    ...ORDER_DESC,
+  });
 };
 
 export const getByUsername = async (username) => {
-  return getAll().then((tweets) =>
-    tweets.filter((tweet) => tweet.username === username)
-  );
+  return Tweet.findAll({
+    ...INCLUDE_USER,
+    ...ORDER_DESC,
+    include: {
+      ...INCLUDE_USER.include,
+      where: { username },
+    },
+  });
 };
 
 export const getById = async (id) => {
-  const found = tweets.find((tweet) => tweet.id === id);
-  if (!found) {
-    return null;
-  }
-  const { username, name, url } = await userRepository.findById(found.userId);
-  return { ...found, username, name, url };
+  return Tweet.findOne({
+    where: { id },
+    ...INCLUDE_USER,
+  });
 };
 
 export const create = async (text, userId) => {
-  const tweet = {
-    id: Date.now().toString(),
-    text,
-    createdAt: new Date(),
-    userId,
-  };
-  tweets = [tweet, ...tweets];
-  return getById(tweet.id);
+  return Tweet.create({ text, userId }) //
+    .then((data) => getById(data.dataValues.id));
 };
 
 export const update = async (id, text) => {
-  const tweet = tweets.find((t) => t.id === id);
-  if (tweet) {
-    tweet.text = text;
-  }
-  return getById(tweet.id);
+  return Tweet.findByPk(id, INCLUDE_USER) //
+    .then((tweet) => {
+      tweet.text = text;
+      return tweet.save();
+    });
 };
 
 export const remove = async (id) => {
-  tweets = tweets.filter((t) => t.id !== id);
+  return Tweet.findByPk(id) //
+    .then((tweet) => tweet.destroy());
 };
